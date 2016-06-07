@@ -42,11 +42,22 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 
 					if (_instance == null)
 					{	
-						// Create singleton
-						GameObject singleton = new GameObject();
-						_instance = singleton.AddComponent<T> ();
-						singleton.name = "(singleton) "+ typeof(T).ToString();
-						
+						GameObject singletonPrefab = null;
+						GameObject singleton = null;
+
+						// Check if exists a singleton prefab on Resources Folder.
+						// -- Prefab must have the same name as the Singleton SubClass
+						singletonPrefab = (GameObject)Resources.Load(typeof(T).ToString(), typeof(GameObject));	
+
+						// Create singleton as new or from prefab
+						if (singletonPrefab != null) {
+							singleton = Instantiate (singletonPrefab);
+							_instance = singleton.GetComponent<T> ();
+						} else {
+							singleton = new GameObject();
+							_instance = singleton.AddComponent<T> ();
+						}
+						singleton.name = "(singleton) "+ typeof(T).ToString();						
 						DontDestroyOnLoad(singleton);
 
 						// Debug.Log("[Singleton] An instance of " + typeof(T) + 
